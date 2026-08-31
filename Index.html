@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE KB</title>
-    <h1><b>THE KB</b></h1>
-
-    <h2><i>This is my personal site</i></h2>
+    <title>Document</title>
+    <link rel="stylesheet" href="design.css">
+    
 </head>
 <body>
-    
+    <div id="space">
+        <svg width="2400" height="100%">
+            <path d="M 400 300 Q 600 400 500 600 T 900 500 T 1100 500 T 1300 500 T 1500 500" stroke="white" fill="none" stroke-width="2"/>
+        </svg>
+            
+        <div class="planet" id="planet1">
+
+        </div>
+        <div class="planet" id="planet2">
+
+        </div>
+
+    </div>
+<script src="script.js">
+    const mypath = document.querySelector("path");
+    const pathLength = mypath.getTotalLength();
+    console.log(pathLength);
+    const point = mypath.getPointAtLength(0);
+    console.log(point);
+</script>
 </body>
 </html>
+
+
+
 
 
