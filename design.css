@@ -37,3 +37,13 @@ body {
   left: 1360px;
   transform: translate(-50%, -50%);
 }
+
+#rocket {
+  width: 80px;
+  height: 80px;
+  background-color: #26eae3;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
