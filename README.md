@@ -2,11 +2,11 @@
 
 *The KB* is my personal site made on the:
 
-#Space theme
+**Space theme**
 
 *You have a ship, discover all of the planets*
 
-#Planets
+**Planets**
 
 1. Intro
 2. All About Me
