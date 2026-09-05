@@ -12,7 +12,7 @@ body {
 }
 
 #space {
-  width: 2400px;
+  width: 8500px;
   height: 100vh;
   background-color: #117ad6;
   position: relative;
@@ -27,15 +27,59 @@ body {
 }
 
 #planet1 {
-  top: 600px;
-  left: 840px;
+  left: 1182.87px;
+  top: 677.38px;
   transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
 }
 
 #planet2 {
-  top: 150px;
-  left: 1360px;
+  left: 2078.91px;
+  top: 95.73px;
   transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+#planet3 {
+  left: 3060.60px;
+  top: 378px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+#planet4 {
+  left: 4127.95px;
+  top: 677.38px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+#planet5 {
+  left: 5168px;
+  top: 378px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+#planet6 {
+  left: 6144px;
+  top: 95.73px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+#planet7 {
+  left: 7494.70px;
+  top: 459.26px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-transform: capitalize;
 }
 
 #rocket {
@@ -46,4 +90,20 @@ body {
   position: absolute;
   transform: translate(-50%, -50%);
 }
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #7eca92;
+  display: none;
+  z-index: 10;
+  color: white;
+  align-items: center;
+  justify-content: center;
+}
+
+
 

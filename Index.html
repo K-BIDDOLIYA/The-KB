@@ -8,17 +8,44 @@
     
 </head>
 <body>
+    <div id="overlay">
+        <button id="close-button">X</button>
+        <h1 id="overlay-title"></h1>
+    </div>
+
     <div id="space">
-        <svg width="2400" height="100%">
-            <path d="M 400 300 Q 600 400 500 600 T 900 500 T 1100 500 T 1300 500 T 1500 500" stroke="white" fill="none" stroke-width="2"/>
+        <svg width="8500" height="100%">
+            <path d="M 300 378 C 840.2613 442.152 695.3132 715.8672 1182.8661 677.376 C 1657.2419 626.0544 1617.7106 104.2848 2078.9093 95.7312 C 2579.6393 87.1776 2546.6966 442.152 3060.6037 378 C 3554.7452 309.5712 3752.4018 694.4832 4127.9493 677.376 C 4510.0853 681.6528 4674.7992 365.1696 5168.9406 378 C 5636.7279 373.7232 5682.8478 189.8208 6144.0465 95.7312 C 6704.0735 57.24 7036 605 7494.6998 459.2592 C 7996 241 8148 489 8825 140" stroke="white" fill="none" stroke-width="2"/>
         </svg>
             
-        <div class="planet" id="planet1">
-
+        <div class="planet" id="planet1" data-section="intro">
+            <h2 style="text-align: center; text-transform: capitalize;">Intro</h2>
         </div>
-        <div class="planet" id="planet2">
 
+        <div class="planet" id="planet2" data-section="allaboutme">
+            <h2 style="text-align: center; text-transform: capitalize;">All About Me</h2>
         </div>
+
+        <div class="planet" id="planet3" data-section="skills">
+            <h2 style="text-align: center; text-transform: capitalize;">Skills</h2>
+        </div>
+
+        <div class="planet" id="planet4" data-section="projects">
+            <h2 style="text-align: center; text-transform: capitalize;">Projects</h2>
+        </div>
+
+        <div class="planet" id="planet5" data-section="achievements">
+            <h2 style="text-align: center; text-transform: capitalize;">Achievements</h2>
+        </div>
+
+        <div class="planet" id="planet6" data-section="contact">
+            <h2 style="text-align: center; text-transform: capitalize;">Contact</h2>
+        </div>
+
+        <div class="planet" id="planet7" data-section="blog">
+            <h2 style="text-align: center; text-transform: capitalize;">Blog</h2>
+        </div>
+
         <div id="rocket">
 
         </div>
@@ -44,12 +71,7 @@
 
     let progress = 0;
 
-    window.addEventListener("wheel", function(event) {
-        event.preventDefault();
-
-        progress += event.deltaY * 0.0005;
-        progress = Math.min(1, Math.max(0, progress));
-
+    function updateRocket(progress) {
         const pointA = getPointAtProgress(progress);
         const pointB = mypath.getPointAtLength(pathLength * progress + 1);
 
@@ -60,7 +82,49 @@
         RocketPosition.style.left = pointA.x + "px";
         RocketPosition.style.top = pointA.y + "px";
         RocketPosition.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
+    }
+
+    window.addEventListener("wheel", function(event) {
+        event.preventDefault();
+
+        progress += event.deltaY * 0.0005;
+        progress = Math.min(1, Math.max(0, progress));
+
+        updateRocket(progress);
     }, { passive: false });
+
+    window.addEventListener("keydown", function(event) {
+        const step = 0.02;
+        if (event.key === "a" || event.key === "ArrowLeft") {
+            progress -= step;
+        } else if (event.key === "d" || event.key === "ArrowRight") {
+            progress += step;
+        }
+        progress = Math.min(1, Math.max(0, progress));
+        updateRocket(progress);
+    });
+
+    const sectionAbout = document.querySelector("#section-about");
+    const sectionProjects = document.querySelector("#section-projects");
+    const planet1 = document.querySelector("#planet1");
+    const planet2 = document.querySelector("#planet2");
+
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlay-title");
+    const closeButton = document.getElementById("close-button");
+    const allPlanets = document.querySelectorAll(".planet");
+
+    allPlanets.forEach(function(planet) {
+    planet.addEventListener("click", function() {
+        overlayTitle.textContent = planet.dataset.section;
+        overlay.style.display = "flex";
+        });
+    });
+
+    closeButton.addEventListener("click", function() {
+        overlay.style.display = "none";
+    });
+    
 </script>
 </body>
 </html>
