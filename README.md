@@ -1,4 +1,4 @@
-#The-KB
+# The KB
 
 **The KB** is my personal site made on the:
 
@@ -61,7 +61,7 @@ I still have a lot to learn, but this website is where that learning started bec
 
 **Website**
 
-"Click this link to access the website" (https://the-kb.vercel.app)
+[Click this link to access the website](https://the-kb.vercel.app)
 
 **Author**
 
