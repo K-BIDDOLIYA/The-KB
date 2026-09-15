@@ -18,7 +18,7 @@
     </div>
 
     <div id="space" style="background-image: url('bg.png');">
-        <svg width="8500" height="100%">
+        <svg width="9000" height="100%">
             <path d="M 300 378 C 840.2613 442.152 695.3132 715.8672 1182.8661 677.376 C 1657.2419 626.0544 1617.7106 104.2848 2078.9093 95.7312 C 2579.6393 87.1776 2546.6966 442.152 3060.6037 378 C 3554.7452 309.5712 3752.4018 694.4832 4127.9493 677.376 C 4510.0853 681.6528 4674.7992 365.1696 5168.9406 378 C 5636.7279 373.7232 5682.8478 189.8208 6144.0465 95.7312 C 6704.0735 57.24 7036 605 7494.6998 459.2592 C 7996 241 8148 489 8825 140" stroke="white" fill="none" stroke-width="2"/>
         </svg>
             
@@ -51,61 +51,192 @@
         </div>
 
         <div id="rocket">
-
+            <img src="rocket.png" alt="Rocket">
         </div>
     </div>
     
 <script>
     const mypath = document.querySelector("path");
-    const pathLength = mypath.getTotalLength();
-    console.log(pathLength);
-    const point = mypath.getPointAtLength(0);
-    console.log(point);
-    function getPointAtProgress(progress) {
-        const length = progress * pathLength;
-        return mypath.getPointAtLength(length);
-    }
-    console.log(getPointAtProgress(0));
-    console.log(getPointAtProgress(0.25));
-    console.log(getPointAtProgress(0.5));
-    console.log(getPointAtProgress(0.75));
-    console.log(getPointAtProgress(1));
 
-    const RocketPosition = document.querySelector("#rocket")
+    const pathLength = mypath.getTotalLength();
+
+    const RocketPosition = document.querySelector("#rocket");
+    const space = document.querySelector("#space");
 
     let progress = 0;
+    let targetProgress = 0;
 
-    function updateRocket(progress) {
-        const pointA = getPointAtProgress(progress);
-        const pointB = mypath.getPointAtLength(pathLength * progress + 1);
+    const smoothness = 0.08;
+
+    function getPointAtProgress(progress) {
+
+        const length = progress * pathLength;
+
+        return mypath.getPointAtLength(length);
+    }
+
+    function getRocketAngle(progress) {
+
+        const currentLength = progress * pathLength;
+
+        const pointA =
+            mypath.getPointAtLength(currentLength);
+
+        const lookAhead =
+            Math.min(currentLength + 2, pathLength);
+
+        const pointB =
+            mypath.getPointAtLength(lookAhead);
+
 
         const dx = pointB.x - pointA.x;
         const dy = pointB.y - pointA.y;
-        const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
 
-        RocketPosition.style.left = pointA.x + "px";
-        RocketPosition.style.top = pointA.y + "px";
-        RocketPosition.style.transform = `translate(-50%, -50%) rotate(${angleDeg}deg)`;
+        const angle =
+            Math.atan2(dy, dx) * (180 / Math.PI);
+
+        return angle - -90;
     }
 
-    window.addEventListener("wheel", function(event) {
-        event.preventDefault();
+    function getCameraLimits() {
 
-        progress += event.deltaY * 0.0005;
-        progress = Math.min(1, Math.max(0, progress));
+        const viewportWidth = window.innerWidth;
 
-        updateRocket(progress);
-    }, { passive: false });
+        const worldWidth = space.offsetWidth;
 
-    window.addEventListener("keydown", function(event) {
-        const step = 0.02;
-        if (event.key === "a" || event.key === "ArrowLeft") {
-            progress -= step;
-        } else if (event.key === "d" || event.key === "ArrowRight") {
-            progress += step;
+        const maxCameraX =
+            Math.max(0, worldWidth - viewportWidth);
+
+
+        return {
+            min: 0,
+            max: maxCameraX
+        };
+    }
+
+    function render() {
+
+        progress +=
+            (targetProgress - progress) * smoothness;
+
+        if (
+            Math.abs(targetProgress - progress)
+            < 0.00001
+        ) {
+            progress = targetProgress;
         }
-        progress = Math.min(1, Math.max(0, progress));
-        updateRocket(progress);
+
+        const point =
+            getPointAtProgress(progress);
+
+        const angle =
+            getRocketAngle(progress);
+
+        RocketPosition.style.left =
+            point.x + "px";
+
+        RocketPosition.style.top =
+            point.y + "px";
+
+        RocketPosition.style.transform =
+            `translate(-50%, -50%) rotate(${angle}deg)`;
+
+        const viewportWidth =
+            window.innerWidth;
+
+
+        let cameraX =
+            point.x - (viewportWidth / 2);
+
+        const cameraLimits =
+            getCameraLimits();
+
+
+        cameraX =
+            Math.max(
+                cameraLimits.min,
+                Math.min(
+                    cameraLimits.max,
+                    cameraX
+                )
+            );
+
+        space.style.transform =
+            `translateX(${-cameraX}px)`;
+
+        requestAnimationFrame(render);
+    }
+
+    progress = 0;
+    targetProgress = 0;
+
+    render();
+
+    window.addEventListener(
+        "wheel",
+        function(event) {
+
+            event.preventDefault();
+
+            targetProgress +=
+                event.deltaY * 0.0005;
+
+            targetProgress =
+                Math.min(
+                    1,
+                    Math.max(
+                        0,
+                        targetProgress
+                    )
+                );
+
+        },
+        {
+            passive: false
+        }
+    );
+
+    window.addEventListener(
+        "keydown",
+        function(event) {
+
+            const step = 0.02;
+
+
+            if (
+                event.key === "a" ||
+                event.key === "ArrowLeft"
+            ) {
+
+                targetProgress -= step;
+
+            }
+
+
+            else if (
+                event.key === "d" ||
+                event.key === "ArrowRight"
+            ) {
+
+                targetProgress += step;
+
+            }
+
+
+            targetProgress =
+                Math.min(
+                    1,
+                    Math.max(
+                        0,
+                        targetProgress
+                    )
+                );
+
+        }
+    );
+
+    window.addEventListener("resize", function() {
+
     });
 
     const sectionAbout = document.querySelector("#section-about");
@@ -120,43 +251,138 @@
 
     const overlayText = document.getElementById("overlay-text");
 
+
     const planetContent = {
+
         intro: {
-        title: "Welcome to The-KB",
+            title: "Welcome to The-KB",
 
-        text: `
-    Hey, i'm Kartik Biddoliya.
+            text: `
+        Hey, i'm Kartik Biddoliya.
 
-    Just a random guy from India.
+        Just a random guy from India.
 
-    I enjoy making new things like projects and stuff.
-    I've always been interested in Game development, programming, AI/ML, and Cybersecurity,
-    and over time that curiosity turned off when i didn't have the time and resources to pursue it.
-    But, i ain't stoping now. I want to learn and explore more about these fields, and i want to share my journey with you.
+        I enjoy making new things like projects and stuff.
+        I've always been interested in Game development, programming, AI/ML, and Cybersecurity,
+        and over time that curiosity turned off when i didn't have the time and resources to pursue it.
+        But, i ain't stoping now. I want to learn and explore more about these fields, and i want to share my journey with you.
 
-    I like building things, experimenting with ideas, and learning by
-    actually making stuff. Some of the things I've worked on include
-    games, websites, apps, and other small projects. I don't really like to write about my journey, life and experiences. 
-    All of this is still a secret to everyone. But now, i am going to share my journey with you. I will be sharing my experiences, learnings, and projects here.
+        I like building things, experimenting with ideas, and learning by
+        actually making stuff. Some of the things I've worked on include
+        games, websites, apps, and other small projects. I don't really like to write about my journey, life and experiences. 
+        All of this is still a secret to everyone. But now, i am going to share my journey with you. I will be sharing my experiences, learnings, and projects here.
 
-    This website is basically my little place, saying some lore about me.
-    It's a place to document who I am, what I make, what I learn,
-    and the things I'm working towards.
+        This website is basically my little place, saying some lore about me.
+        It's a place to document who I am, what I make, what I learn,
+        and the things I'm working towards.
 
-    So, welcome aboard.
+        So, welcome aboard.
 
-    There's more to explore.
+        There's more to explore.
 
-    "I love my work, that's why i never work a day in my life." - Kartik Biddoliya
-    `
-    },
+        "I love my work, that's why i never work a day in my life." - Kartik Biddoliya
+        `
+        },
+
 
         allaboutme: {
             title: "All About Me",
-            text: "Hey! I'm Kartik Biddoliya. I'm a student, creator, and developer who enjoys building things, experimenting with ideas, and learning something new every day."
+
+            text: `
+        WHO I AM
+        ────────
+
+        I'm Kartik Biddoliya, a 15-year-old from Madhya Pradesh, India. I'm in high school right now. I have an attraction towards learning and discovering new things.
+        I am just an average student in school, but i love CS and programming. I'm a self taught programmer and game developer.
+        You know a secret, no one in my school, home or anywhere knows about what i do. I'm just a random guy but no one knows anything about my work, projects and journey. I have a lot of things to share with you, but i will be sharing it slowly. 
+        I will be sharing my journey, experiences, learnings and projects here. So, stay tuned.
+
+        WHERE IT STARTED
+        ────────────────
+
+        On 6 March 2025, when i completed 8th grade, i had a lot of time in my summer vacations. And there was a guy, my best friend, who dared to talk about career and future only with me (cause he'll get trolled by others). He made me serious for my career.
+        AI was in a buzz at that time. So as my final exams finished, i opened ChatGPT and searched about career opportunities, what a teenager can do? 
+        Most importantly - How to earn money as a teenager without prior experience? (i can bet most of the people did this)
+        That search changed everything, i did EVERYTHING that was there and was possible for free. 
+
+        MY INTERESTS (what? and why?)
+        ────────────
+
+        These are the things i love:
+
+        Game Development
+        Everyone find games interesting, but you know what is more interesting? Making games.
+
+        Web development
+        Seeing your code visualize everytime you edit it is the dopamine here.
+
+        ML models
+        They are like kids, train them whatever you like. Never expect all of them to be the same.
+
+        CAD
+        You hate maths but you love CAD. Imagine thinking of something you wanted to exist but it isn't and you wanna design that yourself.
+
+        Random walks with bro
+        Dump all your frustrations, share whatever you want, improve social skills, enjoy the craziness.
+
+
+        WHAT I LIKE TO BUILD
+        ────────────────────
+
+        [Talk about the kind of things you like making.
+
+        What do you build when you get an idea?
+        What kinds of projects excite you?
+        What do you enjoy experimenting with?]
+
+
+        HOW I LEARN
+        ───────────
+
+        [Describe how you learn new things.
+
+        Do you learn by building?
+        Watching tutorials?
+        Reading?
+        Experimenting?
+        Breaking things and fixing them?
+
+        Write about your actual experience rather than
+        what sounds impressive.]
+
+
+        A FEW THINGS ABOUT ME
+        ─────────────────────
+
+        [Add a few small personal things that make the page
+        feel like YOU.]
+
+        • [Something you like]
+        • [Something you're curious about]
+        • [Something you spend time doing]
+        • [Something unusual / interesting about you]
+
+
+        WHAT I'M WORKING TOWARDS
+        ────────────────────────
+
+        [What do you want to become?
+        What do you want to learn?
+        What kind of things do you want to build?
+        Where do you see yourself going?]
+
+
+        ONE LAST THING
+        ──────────────
+
+        [End with something personal.
+
+        A thought, a goal, a sentence you believe in,
+        or simply something you want visitors to know about you.]
+        `
         },
 
-        
+
         skills: {
             title: "Skills",
 
@@ -208,10 +434,12 @@
             text: "Here's where my creations live. From small experiments to bigger projects, every project is a chance to learn, break something, fix it, and make it better."
         },
 
+
         achievements: {
             title: "Achievements",
             text: "A collection of things I'm proud of — competitions, milestones, events, projects, recognitions, and other moments that have been important in my journey."
         },
+
 
         contact: {
             title: "Contact",
@@ -225,10 +453,15 @@
 
         You can find me here:
 
-        Email = kartikbiddloiya24@gmail.com
+        Email = kartikbiddloiya24@gmail.com (personal)
         DISCORD = kartik_b_24 / Kartik
         GITHUB = https://github.com/kartikbiddoliya
         Slack = https://hackclub.enterprise.slack.com/team/U0BBH8C9B09
+        Youtube = https://www.youtube.com/@kb-dev-24
+        Itch.io = https://kartik-biddoliya.itch.io/
+        Linkedin = I'm 15.
+        Instagram = Don't have time for that.
+
 
         I'm always open to interesting conversations and new ideas.
 
@@ -237,10 +470,12 @@
         `
         },
 
+
         blog: {
             title: "Blog",
             text: "Thoughts, experiments, lessons, devlogs, and random things I find interesting. Basically, the place where I write down what is happening behind the scenes."
         }
+
     };
 
 
@@ -257,14 +492,16 @@
             overlayText.textContent = content.text;
 
             overlay.style.display = "flex";
+
         });
 
     });
 
+
     closeButton.addEventListener("click", function() {
         overlay.style.display = "none";
     });
-    
+
 </script>
 </body>
 </html>
